@@ -12,7 +12,8 @@ orchestrate-models
 pr-code-review
 setup-matt-pocock-skills
 to-spec
-to-tickets"
+to-tickets
+triage"
 
 declare -a skill_files=()
 while IFS= read -r skill_file; do
@@ -22,8 +23,8 @@ done < <(
     -type f -name SKILL.md | sort
 )
 
-if [[ "${#skill_files[@]}" -ne 10 ]]; then
-  echo "Expected 10 skills, found ${#skill_files[@]}" >&2
+if [[ "${#skill_files[@]}" -ne 11 ]]; then
+  echo "Expected 11 skills, found ${#skill_files[@]}" >&2
   exit 1
 fi
 
@@ -58,7 +59,7 @@ if [[ "${actual_skills}" != "${EXPECTED_SKILLS}" ]]; then
   exit 1
 fi
 
-if [[ "$(printf '%s\n' "${names[@]}" | sort -u | wc -l | tr -d ' ')" -ne 10 ]]; then
+if [[ "$(printf '%s\n' "${names[@]}" | sort -u | wc -l | tr -d ' ')" -ne 11 ]]; then
   echo "Duplicate skill names found" >&2
   exit 1
 fi
@@ -71,5 +72,6 @@ fi
 test -s "${REPOSITORY_ROOT}/upstream/MATT-POCOCK-LICENSE"
 test -f "${REPOSITORY_ROOT}/skills/matt/domain-modeling/ADR-FORMAT.md"
 test -f "${REPOSITORY_ROOT}/skills/matt/setup-matt-pocock-skills/issue-tracker-github.md"
+test -f "${REPOSITORY_ROOT}/skills/matt/triage/AGENT-BRIEF.md"
 
 echo "Validated ${#skill_files[@]} skills"

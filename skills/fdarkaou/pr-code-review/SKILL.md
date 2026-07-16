@@ -7,7 +7,13 @@ description: Use when the user asks to review a pull request, PR URL or number, 
 
 Perform a read-only, multi-agent review of one change set. Accept a GitHub PR URL or number, a branch, an explicit base/head pair, a Git range, or the current branch.
 
-Default to reviewing committed changes and reporting results in Codex. Include staged, unstaged, or untracked work only when the user explicitly requests it. Post a GitHub review or comment only when the target is a PR and the user explicitly asks to publish it. Never modify the working tree, fix findings, push, approve, request changes, merge, close, or otherwise mutate the review target unless the user separately authorizes that action.
+Default to reviewing committed changes and reporting results in the current agent session. Include staged, unstaged, or untracked work only when the user explicitly requests it. Post a GitHub review or comment only when the target is a PR and the user explicitly asks to publish it. Never modify the working tree, fix findings, push, approve, request changes, merge, close, or otherwise mutate the review target unless the user separately authorizes that action.
+
+## Runtime capability
+
+This workflow requires a real independent-subagent surface. Inspect the active runtime's delegation schema and concurrency limit before resolving the target. Use native subagents and real model selectors only when exposed; otherwise report models as inherited or unknown.
+
+One available subagent is sufficient: run specialist and validator roles sequentially in waves. If no independent subagent is available, report `BLOCKED` and explain that an ordinary inline review is possible only outside this skill's independence contract. Never simulate multiple independent reviewers in one context.
 
 ## Resolve the review target
 
@@ -25,7 +31,7 @@ If the user explicitly requests uncommitted work, append staged and unstaged dif
 
 ## Workflow
 
-1. Resolve the review target using the rules above: a stable base/head pair for committed targets or a `HEAD` anchor for WIP-only targets.
+1. Confirm the required independent-subagent capability, then resolve the review target using the rules above: a stable base/head pair for committed targets or a `HEAD` anchor for WIP-only targets.
 2. For PR targets, confirm the local repository matches the PR remote. If it does not, locate an existing matching checkout. If none exists and history analysis requires one, clone the repository read-only into a temporary directory. Do not alter the user's current branch or working tree.
 3. For PR targets only, check eligibility with a lightweight subagent. Skip closed, draft, automated, obviously trivial, or already-reviewed PRs unless the user explicitly requests a rerun. State the exact skip reason. For non-PR targets, skip this gate and record that PR eligibility does not apply.
 4. Discover the originating issue, PRD, or specification from available PR text, branch names, commit messages, linked issue references, user-provided paths, and repository documents. Record the authoritative source and its acceptance criteria. If no formal source exists, use only the user's explicit stated intent and note the gap; do not invent requirements.
@@ -99,4 +105,4 @@ In **Design Signals**, list any validated actionable repository-standards violat
 
 When a GitHub remote exists, use full commit SHAs in GitHub blob links and tight line ranges with at least one line of surrounding context. Without a GitHub remote, use clickable absolute local file links with line numbers. For explicitly included uncommitted changes, use local file links and label them unstable. After findings, add a compact review-coverage note and explicitly state any unavailable PR metadata, previous-PR context, specification source, or publication capability.
 
-When the target is a PR and the user explicitly requests publication, post one concise PR comment containing only the surviving findings. Recheck the head SHA immediately before posting. If no finding survives, do not post unless the user explicitly asked for a no-findings comment. For non-PR targets, report in Codex and explain that GitHub publication requires a PR.
+When the target is a PR and the user explicitly requests publication, post one concise PR comment containing only the surviving findings. Recheck the head SHA immediately before posting. If no finding survives, do not post unless the user explicitly asked for a no-findings comment. For non-PR targets, report in the current session and explain that GitHub publication requires a PR.

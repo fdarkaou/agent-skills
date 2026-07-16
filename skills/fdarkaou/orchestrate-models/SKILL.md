@@ -1,41 +1,50 @@
 ---
 name: orchestrate-models
-description: Use when starting a Codex session that may delegate investigation, implementation, or review work across GPT-5.6 Sol, Luna, or Terra.
+description: Use when starting an agent session that may delegate investigation, implementation, or review work across multiple subagents or models.
 ---
 
 # Orchestrate Models
 
-Keep `gpt-5.6-sol` in the main loop for product, UX/UI, architecture, API, and implementation design; orchestration; integration; and final review. Route executor work explicitly.
+Keep one coordinator in the main loop for product judgment, UX/UI, architecture, API and implementation design, integration, verification, and final review. Delegate bounded executor work through the active runtime's real capabilities.
 
-## Session-start routing
+## Discover The Runtime
 
-1. Inspect the displayed delegation schema before dispatching.
-2. Sol completes the design and writes an executor-ready specification before delegation. Executors may gather evidence; Sol decides.
-3. Use `gpt-5.6-luna` for routine reconnaissance, mechanical edits, tests, and clear-spec implementation.
-4. Use `gpt-5.6-terra` for ambiguous debugging, cross-boundary/high-risk implementation, or a failed Luna attempt—not design ownership.
-5. Give each executor a bounded slice with exact scope, exclusions, output, and verification.
-6. Sol inspects the actual result, integrates it, reruns checks, and owns final review.
-7. Report every delegation with model, scope, and routing reason.
+1. Inspect the available delegation schema before dispatching.
+2. Identify native subagents, concurrency limits, and any explicit model selector.
+3. Treat that schema as ground truth. Never invent a model field, agent type, or background surface.
+4. When model selection is unavailable, use inherited/default subagents and report the model as inherited or unknown.
 
-## Model selection
+## Portable Roles
 
-- Treat the current tool schema as ground truth; never invent a model field.
-- Prefer an explicit model selector when the delegation surface provides one.
-- When it does not, inherited/default-model in-app subagents are allowed. Report the model as inherited or unknown rather than claiming Luna or Terra.
-- Use an explicit executor command such as `codex exec --ephemeral -m gpt-5.6-luna ...` or `-m gpt-5.6-terra ...` only when CLI delegation is useful for the task.
-- Prompting an inherited agent to “act as Luna” does not change its model.
-- Parallelize only independent slices with non-overlapping write ownership.
+### Coordinator
 
-## App and CLI surfaces
+Owns requirements, design, task boundaries, integration, conflict resolution, verification, and the final answer. Executors may gather evidence; the coordinator decides.
 
-- If the app Worker schema has no model selector, it cannot guarantee Luna/Terra; use it when inherited/default-model delegation is appropriate and describe the routing honestly.
-- Explicitly selected Luna/Terra can run through `codex exec -m ...`; these appear as CLI/background processes, not app Workers.
-- Child CLI sessions may require Full Access or a scoped approval for Codex state, private-repo, process, or network access. If blocked, do not bypass the runtime; ask for the required access or work inline on Sol.
+### Routine executor
 
-## Red flags
+Use for reconnaissance, mechanical edits, focused tests, and implementation from a clear specification.
 
-- Invented model selector
-- Misreporting an inherited/default model as an explicitly selected model
-- Executor-owned product, UX/UI, architecture, API, or implementation design
-- Overlapping executor edits
-- Unverified summary or test claim
+### Deep executor
+
+Use for ambiguous debugging, cross-boundary or high-risk implementation, and a failed routine attempt. It still does not take design ownership from the coordinator.
+
+## Runtime Adapters
+
+- **Codex:** Prefer GPT-5.6 Sol as coordinator, Luna as routine executor, and Terra as deep executor when those explicit selectors are available. In-app subagents may inherit the current model; report that honestly. Use `codex exec -m ...` only when CLI delegation is appropriate and authorized.
+- **Claude Code:** Use the main session as coordinator and native subagents as executors. Select a configured model only when the active subagent surface exposes that option; otherwise report inherited or unknown.
+- **Other agents:** Map the three roles to the closest native subagent and model-selection capabilities. If no subagent surface exists, work inline instead of simulating delegation.
+
+## Dispatch Contract
+
+Every executor receives exact scope, exclusions, evidence or files to return, and verification. Parallelize only independent slices with non-overlapping write ownership. Keep tentative findings out of neutral evidence packets used for independent review.
+
+The coordinator inspects actual outputs and diffs, reruns relevant checks, integrates the result, and reports every delegation with role, selected or inherited model, scope, and routing reason.
+
+## Red Flags
+
+- Invented selector or model identity
+- Calling an inherited model explicitly selected
+- Executor-owned product or architecture decisions
+- Overlapping writes
+- Unverified summaries or test claims
+- Delegation when inline work is safer or smaller

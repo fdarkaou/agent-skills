@@ -40,6 +40,7 @@ declare -a SOURCE_MAPPINGS=(
   "skills/productivity/grilling:grilling"
   "skills/engineering/to-spec:to-spec"
   "skills/engineering/to-tickets:to-tickets"
+  "skills/engineering/triage:triage"
   "skills/engineering/setup-matt-pocock-skills:setup-matt-pocock-skills"
 )
 
