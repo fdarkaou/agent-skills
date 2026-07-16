@@ -1,0 +1,62 @@
+name: Sync Matt Pocock skills
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Sync selected upstream skills
+        run: ./scripts/sync-matt-skills.sh
+
+      - name: Open update pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet; then
+            echo "Selected Matt Pocock skills are already current."
+            exit 0
+          fi
+
+          upstream_sha="$(cat upstream/matt-pocock.commit)"
+          short_sha="${upstream_sha:0:12}"
+          branch="automation/sync-matt-${short_sha}"
+
+          open_pull_request="$(
+            gh pr list --state open --head "${branch}" --json url --jq '.[0].url // empty'
+          )"
+          if [[ -n "${open_pull_request}" ]]; then
+            echo "An update pull request is already open: ${open_pull_request}"
+            exit 0
+          fi
+
+          if git ls-remote --exit-code --heads origin "${branch}" >/dev/null; then
+            echo "Reusing existing remote branch ${branch}."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git switch -c "${branch}"
+            git add skills/matt upstream
+            git commit -m "chore: sync Matt Pocock skills at ${short_sha}"
+            git push --set-upstream origin "${branch}"
+          fi
+
+          pull_request_body="$(printf '%s\n\n%s' \
+            "Automated update of the selected Matt Pocock skills. Upstream commit: https://github.com/mattpocock/skills/commit/${upstream_sha}" \
+            "Review the prompt and supporting-file diff before merging. This workflow does not auto-merge.")"
+
+          gh pr create \
+            --base main \
+            --head "${branch}" \
+            --title "chore: sync Matt Pocock skills at ${short_sha}" \
+            --body "${pull_request_body}"
