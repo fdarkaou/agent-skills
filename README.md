@@ -1,4 +1,4 @@
-# Fekri's Agent Skills
+# Agent Skills
 
 A curated engineering workflow for Codex, Claude Code, and other Agent Skills-compatible coding agents.
 
