@@ -1,4 +1,4 @@
 interface:
   display_name: "Orchestrate Models"
-  short_description: "Route Sol, Luna, and Terra efficiently"
-  default_prompt: "Use $orchestrate-models to route this session across Sol, Luna, and Terra."
+  short_description: "Route coordinator and executor agents clearly"
+  default_prompt: "Use $orchestrate-models to coordinate this work across the available subagents and models."

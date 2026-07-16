@@ -11,7 +11,7 @@ Browser-facing work is complete only when automated gates pass and every changed
 
 **REQUIRED SUB-SKILL:** Use `implement` for test-first vertical slices and no-debt implementation.
 
-**REQUIRED BROWSER SKILL:** Use `chrome:control-chrome`. Follow its browser-selection, authentication, and no-fallback rules exactly.
+**REQUIRED BROWSER CAPABILITY:** Use an available integration that can drive the user's existing Chrome session. In Codex, use `chrome:control-chrome`. In Claude Code, use a configured Chrome/browser integration or MCP with the same capability. Follow that integration's authentication and safety rules. If the runtime cannot control the existing Chrome session, report `BLOCKED`.
 
 If the requested behavior has no browser-reachable journey, use `implement` instead.
 
@@ -38,7 +38,7 @@ Browser checks complement automated tests; neither substitutes for the other.
 3. In a worktree, use `git worktree list --porcelain` to locate the primary checkout. If this worktree lacks an environment file and a matching gitignored file exists there, ask before reusing it. Never print, commit, or expose its contents.
 4. Use the documented bootstrap mechanism. Never invent placeholder secrets.
 5. Start the real application on an available port, wait for readiness, and record the exact origin.
-6. Connect to the existing Chrome session and navigate to that origin.
+6. Connect through the runtime's browser integration to the existing Chrome session and navigate to that origin.
 
 ## Authentication
 
@@ -49,7 +49,7 @@ Never:
 - inspect cookies, storage, passwords, or session internals;
 - create a temporary auth bypass or undocumented test account;
 - inject fabricated tokens or credentials;
-- replace Chrome with headless Chrome, Playwright, another browser, API calls, or mocks;
+- replace the selected real Chrome session with headless Chrome, Playwright, another browser, API calls, or mocks;
 - treat a logged-out page as proof of the authenticated journey.
 
 ## Browser Validation
