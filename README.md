@@ -4,7 +4,7 @@ A curated, team-installable bundle of agent skills for Codex and Claude Code.
 
 The repository contains:
 
-- Fekri's skills: `implement`, `pr-code-review`, and `orchestrate-models`.
+- Fekri's skills: `implement`, `implement-with-validation`, `pr-code-review`, and `orchestrate-models`.
 - Selected skills from [Matt Pocock's skills repository](https://github.com/mattpocock/skills): `grill-with-docs`, `domain-modeling`, `grilling`, `to-spec`, `to-tickets`, and `setup-matt-pocock-skills`.
 
 `domain-modeling` and `grilling` are included because `grill-with-docs` invokes them. Matt renamed the older `to-prd` and `to-issues` skills to `to-spec` and `to-tickets`; this bundle follows the current upstream names.
@@ -27,15 +27,26 @@ npx skills@latest add fdarkaou/agent-skills \
   --yes
 ```
 
-For Claude Code, use the interactive installer and select the compatible skills you want:
+For Claude Code, install only the compatible subset:
 
 ```bash
 npx skills@latest add fdarkaou/agent-skills \
   --global \
-  --agent claude-code
+  --agent claude-code \
+  --skill implement \
+  --skill pr-code-review \
+  --skill grill-with-docs \
+  --skill domain-modeling \
+  --skill grilling \
+  --skill to-spec \
+  --skill to-tickets \
+  --skill setup-matt-pocock-skills \
+  --yes
 ```
 
-Do not select `orchestrate-models` for Claude Code: it describes Codex's in-app subagent and model-routing surface. The first command lets each teammate select both skills and agents. The Codex command installs the complete bundle without prompts.
+This command excludes `orchestrate-models` and `implement-with-validation`, which depend on Codex-specific orchestration and Chrome surfaces. The first command lets each teammate select both skills and agents. The Codex command installs the complete bundle without prompts.
+
+`implement-with-validation` requires Codex's bundled Chrome plugin and an available Chrome session. It intentionally reports `BLOCKED` instead of claiming completion when the local runtime, environment, or authenticated Chrome journey is unavailable.
 
 ## Update installed skills
 

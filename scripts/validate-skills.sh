@@ -7,6 +7,7 @@ readonly EXPECTED_SKILLS="domain-modeling
 grill-with-docs
 grilling
 implement
+implement-with-validation
 orchestrate-models
 pr-code-review
 setup-matt-pocock-skills
@@ -21,8 +22,8 @@ done < <(
     -type f -name SKILL.md | sort
 )
 
-if [[ "${#skill_files[@]}" -ne 9 ]]; then
-  echo "Expected 9 skills, found ${#skill_files[@]}" >&2
+if [[ "${#skill_files[@]}" -ne 10 ]]; then
+  echo "Expected 10 skills, found ${#skill_files[@]}" >&2
   exit 1
 fi
 
@@ -57,7 +58,7 @@ if [[ "${actual_skills}" != "${EXPECTED_SKILLS}" ]]; then
   exit 1
 fi
 
-if [[ "$(printf '%s\n' "${names[@]}" | sort -u | wc -l | tr -d ' ')" -ne 9 ]]; then
+if [[ "$(printf '%s\n' "${names[@]}" | sort -u | wc -l | tr -d ' ')" -ne 10 ]]; then
   echo "Duplicate skill names found" >&2
   exit 1
 fi

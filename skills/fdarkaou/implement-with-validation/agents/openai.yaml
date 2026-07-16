@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement With Validation"
+  short_description: "Test-first delivery proven end to end in Chrome"
+  default_prompt: "Use $implement-with-validation to build this change test-first and prove every changed user journey in my local Chrome session."
